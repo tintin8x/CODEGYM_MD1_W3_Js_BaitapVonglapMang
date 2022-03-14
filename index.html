@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body onload="docReady()">
+<div>
+    <h1>Thực hành sự kiện bàn phím</h1>
+    <img id="nobita" src="https://thumbs.gfycat.com/HotEllipticalEquestrian-size_restricted.gif" style="position:absolute;left:0; top:100px;" height="100" width="80"/>
+    <br><br><br><br><br>
+</div>
+<div>
+    <h1>[*Bài tập] Luyện tập vòng lặp 01</h1>
+    <h2>8. Game đoán số</h2>
+    <button onclick="luckyNum()">Chơi</button>
+</div>
+
+<div>
+    <h1>[*Bài tập] Luyện tập vòng lặp 02</h1>
+    <h2>6. In hình trái tim</h2>
+    <button onclick="drawheart()">In hình Trái Tim</button>
+</div>
+<div>
+    <h1>[*Bài tập] Ứng dụng vui Faking Textarea on Typing</h1>
+    <h2>Type anything slowly</h2>
+    <form name="FakingTextarea">
+        <textarea name="txt" cols="40" rows="10" onkeydown="typeTextarea();"></textarea>
+    </form>
+</div>
+</body>
+<script>
+    //Sự kiện bàn phím
+    function upArrowPressed() {
+        let element = document.getElementById("nobita");
+        element.style.top = parseInt(element.style.top) - 5 + 'px';
+    }
+    function downArrowPressed() {
+        var element = document.getElementById("nobita");
+        element.style.top = parseInt(element.style.top) + 5 + 'px';
+    }
+    function leftArrowPressed() {
+        var element = document.getElementById("nobita");
+        element.style.left = parseInt(element.style.left) - 5 + 'px';
+    }
+    function rightArrowPressed() {
+        var element = document.getElementById("nobita");
+        element.style.left = parseInt(element.style.left) + 5 + 'px';
+
+    }
+    function moveSelection(evt) {
+        switch (evt.keyCode) {
+            case 37:
+                leftArrowPressed();
+                break;
+            case 39:
+                rightArrowPressed();
+                break;
+            case 38:
+                upArrowPressed();
+                break;
+            case 40:
+                downArrowPressed();
+                break;
+        }
+    }
+    function docReady() {
+        window.addEventListener('keydown', moveSelection);
+    }
+
+    //Game đoán số
+    function luckyNum() {
+        let a = +prompt("Nhập số nhỏ nhất của khoảng muốn đoán")
+        let b = +prompt("Nhập số lớn nhất của khoảng muốn đoán")
+        let c = +prompt("Nhập số muốn đoán")
+        let num = a + parseInt(Math.random() * (b - a))
+        let count = 1;
+
+        for (; count < 3; count++) {
+            if (c == num) {
+                alert("9 xác!!!");
+                break;
+            } else if (c > num) {
+                c = +prompt("Số bạn đoán lớn hơn con số may mắn,xin vui lòng chọn lại!");
+            } else if (c < num) {
+                c = +prompt("Số bạn đoán nhỏ hơn con số may mắn,xin vui lòng chọn lại!");
+            }
+        }
+        if (count == 3) {
+            alert("Bạn đã hết 3 lượt đoán, chúc bạn may mắn lần sau! \nCon số may mắn là: " + num)
+        }
+    }
+
+    //Hàm vẽ trái tim có tỷ lệ scale
+    function drawheart() {
+        let scale = +prompt("Chọn cỡ của trái tim (1,2,3...)");
+        let count;
+        let maxCol = 10 * scale - 1;
+        //draw top
+        count = 2 * scale + parseInt((scale - 1) / 2);
+        for (let i = 1; i <= 2 * scale + parseInt((scale - 1) / 2); i++) {
+            for (let j = 1; j <= maxCol; j++) {
+                if ((j > count && j <= 10 * scale / 2 - count) || (j >= 10 * scale / 2 + count && j <= maxCol - count)) {
+                    document.write('*');
+                } else {
+                    document.write('_');
+                }
+            }
+            count = count - 1;
+            document.write('<br>');
+        }
+
+        //draw bottom
+        count = 0;
+        for (let i = 2 * scale + 1; i <= 7 * scale; i++) {
+            for (let j = 1; j <= maxCol; j++) {
+                if (j > count && j <= maxCol - count) {
+                    document.write('*');
+                } else {
+                    document.write('_');
+                }
+            }
+            count = count + 1;
+            document.write('<br>');
+        }
+    }
+
+    //Ứng dụng Faking textarea in typing
+    let str = "T,Ô,I, ,L,À, ,M,Ộ,T, ,Đ,Ứ,A, ,N,G,Ố,C,!,!,!";
+    //split into array of strings.
+    let res = str.split(",");
+
+    function typeTextarea(){
+        let text = document.FakingTextarea.txt.value;
+        let txtLength = text.length;
+        if(txtLength > 0 ){
+            for (let i = 0;;)
+        }
+
+
+    }
+
+</script>
+</html>
