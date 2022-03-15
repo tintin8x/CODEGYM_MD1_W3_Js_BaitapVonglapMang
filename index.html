@@ -3,11 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="myStyle.css">
 </head>
-<body onload="docReady()">
+<!--sử dụng trong bải sự kiện phím-->
+<!--<body onload="docReady()">-->
+<body>
 <div>
     <h1>Thực hành sự kiện bàn phím</h1>
-    <img id="nobita" src="https://thumbs.gfycat.com/HotEllipticalEquestrian-size_restricted.gif" style="position:absolute;left:0; top:100px;" height="100" width="80"/>
+    <img id="nobita" src="https://thumbs.gfycat.com/HotEllipticalEquestrian-size_restricted.gif"
+         style="position:absolute;left:0; top:100px;" height="100" width="80"/>
+    <br><br><br><br><br><br>
+</div>
+<div>
+    <h1>Game cờ caro</h1>
+    <label>Chọn người đi trước: </label>
+    <label><input name="symbol" value="X" type="radio" checked/> X</label>
+    <label><input name="symbol" value="O" type="radio"/> O</label>
+    <br>
+    <button onclick="resetCaro()">Reset</button>
+    <table class="table1" id="caroTable">
+        <tr>
+            <td id="c1" onclick="play('c1')"></td>
+            <td id="c2" onclick="play('c2')"></td>
+            <td id="c3" onclick="play('c3')"></td>
+            <td id="c4" onclick="play('c4')"></td>
+        </tr>
+        <tr>
+            <td id="c5" onclick="play('c5')"></td>
+            <td id="c6" onclick="play('c6')"></td>
+            <td id="c7" onclick="play('c7')"></td>
+            <td id="c8" onclick="play('c8')"></td>
+        </tr>
+        <tr>
+            <td id="c9" onclick="play('c9')"></td>
+            <td id="c10" onclick="play('c10')"></td>
+            <td id="c11" onclick="play('c11')"></td>
+            <td id="c12" onclick="play('c12')"></td>
+        </tr>
+        <tr>
+            <td id="c13" onclick="play('c13')"></td>
+            <td id="c14" onclick="play('c14')"></td>
+            <td id="c15" onclick="play('c15')"></td>
+            <td id="c16" onclick="play('c16')"></td>
+        </tr>
+    </table>
+</div>
+<div>
+    <h1>Thực hành thao tác với mảng</h1>
+    <p>1. Viết một chương trình JavaScript để thêm vào các phần tử trong một mảng và hiển thị chúng.</p>
+    <input type="text" id="arr1TxtIn">
+    <button onclick="addToArr1()">Add</button>
+    <button onclick="disFromArr1()">Display</button>
+    <button onclick="reverseArr1()">Reverse</button>
+    <button onclick="findInArr1()">Find</button>
+    <button onclick="findMaxInArr1()">Find Max</button>
+    <br><br>
+    <div id="arr1Msg"></div>
     <br><br><br><br><br>
 </div>
 <div>
@@ -24,30 +75,278 @@
 <div>
     <h1>[*Bài tập] Ứng dụng vui Faking Textarea on Typing</h1>
     <h2>Type anything slowly</h2>
-    <form name="FakingTextarea">
+    <form name="fa">
         <textarea name="txt" cols="40" rows="10" onkeydown="typeTextarea();"></textarea>
     </form>
 </div>
 </body>
 <script>
+    //Cờ ca rô
+    let countX = 0;
+    let countO = 0;
+    let oTable = document.getElementById('caroTable');
+    let rowLen = oTable.rows.length;
+    let colLen = oTable.rows.item(0).cells.length;
+
+
+    // Hàm nhấn vào ô cờ để chơi
+    function play(cellID) {
+        addXO(cellID);
+        checkWinByRow(cellID, rowLen, 3);
+        checkWinByCol(cellID, colLen, 3);
+        //checkWinByCross1(cellID, colLen, 3);
+        //checkWinByCross2(cellID, colLen, 3);
+    }
+
+    function addXO(id) {
+        let firstSym = document.getElementsByName('symbol');
+        // First time
+        while (document.getElementById(id).innerHTML == "") {
+
+            if (countO == countX) {
+                if (firstSym[0].checked) {
+                    document.getElementById(id).innerHTML = firstSym[0].value;
+                    countX++;
+                } else {
+                    document.getElementById(id).innerHTML = firstSym[1].value;
+                    countO++;
+                }
+            }
+            // Next time
+            else if (countX > countO) {
+                document.getElementById(id).innerHTML = "O";
+                countO++;
+            } else if (countO > countX) {
+                document.getElementById(id).innerHTML = "X";
+                countX++;
+            }
+
+        }
+    }
+
+    //Reset bàn cờ caro
+    function resetCaro() {
+        for (let i = 0; i < rowLen; i++) {
+            for (let j = 0; j < colLen; j++) {
+                let cID = "c" + (i * colLen + j + 1);
+                document.getElementById(cID).innerHTML = "";
+            }
+        }
+        countO = 0;
+        countX = 0;
+    }
+
+    //Check người thắng Caro
+    //m: kích thước bàn cờ, số hàng hoặc số cột
+    //n: số ô liền nhau thì thắng
+
+    function checkWinByRow(cellID, m, n) {
+        let rowLen = oTable.rows.length;
+        let s = cellID.split("c");
+        let cellNum = parseInt(s[1]);
+        let colNum = cellNum % m;
+        if (colNum == 0) {
+            colNum = 4;
+        }
+        let sCellNum;
+        let eCellNum;
+        let count = 0;
+
+        // Thứ tự ô bắt đầu check (từ trái qua phải)
+        if (colNum < n) {
+            sCellNum = cellNum - colNum + 1;
+        } else {
+            sCellNum = cellNum - n + 1;
+        }
+        // Thứ tự ô kết thúc check
+        if (colNum > m - n + 1) {
+            eCellNum = cellNum + (m - colNum);
+        } else {
+            eCellNum = cellNum + n - 1;
+        }
+        // Check
+        for (let i = sCellNum; i < eCellNum; i++) {
+            let a = document.getElementById("c" + i).innerHTML;
+            let b = document.getElementById("c" + (i + 1)).innerHTML
+            if (a == b && a != "") {
+                count++;
+            } else {
+                count = 0;
+            }
+
+            if (count == n - 1) {
+                alert("WIN!!!");
+                resetCaro();
+                break;
+            }
+        }
+    }
+
+    function checkWinByCol(cellID, m, n) {
+        let s = cellID.split("c");
+        let cellNum = parseInt(s[1]);
+        let rowNum = Math.floor((cellNum - 1) / m) + 1;
+        let sCellNum;
+        let eCellNum;
+        let count = 0;
+
+        // Thứ tự ô bắt đầu check (từ trên xuống dưới)
+        if (rowNum < n) {
+            sCellNum = cellNum - (rowNum - 1) * m;
+        } else {
+            sCellNum = cellNum - (n - 1) * m;
+        }
+        // Thứ tự ô kết thúc check
+        if (rowNum > m - n + 1) {
+            eCellNum = cellNum + (m - rowNum) * m;
+        } else {
+            eCellNum = cellNum + (n - 1) * m;
+        }
+        // Check
+        for (let i = sCellNum; i < eCellNum; i = i + 4) {
+            let a = document.getElementById("c" + i).innerHTML;
+            let b = document.getElementById("c" + (i + 4)).innerHTML
+            if (a == b && a != "") {
+                count++;
+            } else {
+                count = 0;
+            }
+
+            if (count == n - 1) {
+                alert("WIN!!!");
+                resetCaro();
+                break;
+            }
+        }
+    }
+    // function checkWinByCross1(cellID, m, n) {
+    //     let s = cellID.split("c");
+    //     let cellNum = parseInt(s[1]);
+    //     let rowNum = Math.floor((cellNum - 1) / m) + 1;
+    //     let colNum = cellNum % m;
+    //     let sCellNum;
+    //     let eCellNum;
+    //     let count = 0;
+    //
+    //     // Thứ tự ô bắt đầu check (từ trên xuống dưới)
+    //     if (rowNum < n) {
+    //         sCellNum = cellNum - (rowNum - 1) * m;
+    //     } else {
+    //         sCellNum = cellNum - (n - 1) * m;
+    //     }
+    //     // Thứ tự ô kết thúc check
+    //     if (rowNum > m - n + 1) {
+    //         eCellNum = cellNum + (m - rowNum) * m;
+    //     } else {
+    //         eCellNum = cellNum + (n - 1) * m;
+    //     }
+    //     // Check
+    //     for (let i = sCellNum; i < eCellNum; i = i + 4) {
+    //         let a = document.getElementById("c" + i).innerHTML;
+    //         let b = document.getElementById("c" + (i + 4)).innerHTML
+    //         if (a == b && a != "") {
+    //             count++;
+    //         } else {
+    //             count = 0;
+    //         }
+    //
+    //         if (count == n - 1) {
+    //             alert("WIN!!!");
+    //             resetCaro();
+    //             break;
+    //         }
+    //     }
+    // }
+
+    //thêm vào các phần tử trong một mảng và hiển thị chúng
+    let arr1 = new Array();
+    let arr1Index = 0;
+
+    function addToArr1() {
+        arr1[arr1Index] = document.getElementById('arr1TxtIn').value;
+        document.getElementById('arr1Msg').innerHTML = "Element: " + arr1[arr1Index] + " Added at index " + arr1Index;
+        arr1Index++;
+        document.getElementById('arr1TxtIn').value = "";
+    }
+
+    function disFromArr1() {
+        let e = "<hr/>";
+        for (let i = 0; i < arr1.length; i++) {
+            e += "Element " + i + " = " + arr1[i] + "<br/>";
+        }
+        document.getElementById("arr1Msg").innerHTML = e;
+    }
+
+    function reverseArr1() {
+        let first = 0;
+        let last = arr1.length - 1;
+        while (first < last) {
+            let temp = arr1[first];
+            arr1[first] = arr1[last];
+            arr1[last] = temp;
+            first++;
+            last--;
+        }
+        document.getElementById('arr1Msg').innerHTML = "Reverse Array Done!"
+    }
+
+    function findInArr1() {
+        let a = document.getElementById('arr1TxtIn').value;
+        let count = 0;
+        for (let i = 0; i < arr1.length; i++) {
+            if (arr1[i] == a) {
+                e += "Find " + a + " At Element " + i + "<br/>";
+                count++;
+            }
+        }
+        if (count == 0) {
+            e = a + " not found!";
+        }
+        document.getElementById("arr1Msg").innerHTML = e;
+
+    }
+
+    function findMaxInArr1() {
+        let max = arr1[0];
+        let e = "";
+        let count = 0;
+        for (let i = 1; i < arr1.length; i++) {
+            if (arr1[i] >= max) {
+                max = arr1[i];
+            }
+        }
+        for (let i = 0; i < arr1.length; i++) {
+            if (arr1[i] == max) {
+                e += "Max Value is " + max + " At Element " + i + "<br/>";
+            }
+        }
+        document.getElementById("arr1Msg").innerHTML = e;
+
+    }
+
+
     //Sự kiện bàn phím
     function upArrowPressed() {
         let element = document.getElementById("nobita");
         element.style.top = parseInt(element.style.top) - 5 + 'px';
     }
+
     function downArrowPressed() {
         var element = document.getElementById("nobita");
         element.style.top = parseInt(element.style.top) + 5 + 'px';
     }
+
     function leftArrowPressed() {
         var element = document.getElementById("nobita");
         element.style.left = parseInt(element.style.left) - 5 + 'px';
     }
+
     function rightArrowPressed() {
         var element = document.getElementById("nobita");
         element.style.left = parseInt(element.style.left) + 5 + 'px';
 
     }
+
     function moveSelection(evt) {
         switch (evt.keyCode) {
             case 37:
@@ -64,6 +363,7 @@
                 break;
         }
     }
+
     function docReady() {
         window.addEventListener('keydown', moveSelection);
     }
@@ -126,18 +426,51 @@
     }
 
     //Ứng dụng Faking textarea in typing
-    let str = "T,Ô,I, ,L,À, ,M,Ộ,T, ,Đ,Ứ,A, ,N,G,Ố,C,!,!,!";
-    //split into array of strings.
-    let res = str.split(",");
+    // let str = "T,Ô,I, ,L,À, ,M,Ộ,T, ,Đ,Ứ,A, ,N,G,Ố,C,!,!,!";
+    // //split into array of strings.
+    // var res = str.split(",");
+    // let pText = "";
+    var a = new Array(), n = "";
+    a[1] = 'T';
+    a[2] = 'Ô';
+    a[3] = 'I';
+    a[4] = ' ';
+    a[5] = 'L';
+    a[6] = 'À';
+    a[7] = ' ';
+    a[8] = 'M';
+    a[9] = 'Ộ';
+    a[10] = 'T';
+    a[11] = ' ';
+    a[12] = 'Đ';
+    a[13] = 'Ứ';
+    a[14] = 'A';
+    a[15] = ' ';
+    a[16] = 'N';
+    a[17] = 'G';
+    a[18] = 'Ố';
+    a[19] = 'C';
+    a[20] = '!';
+    a[21] = '!';
+    a[22] = '!';
 
-    function typeTextarea(){
-        let text = document.FakingTextarea.txt.value;
-        let txtLength = text.length;
-        if(txtLength > 0 ){
-            for (let i = 0;;)
+    function typeTextarea() {
+
+        t = document.fa.txt.value;
+        j = t.length;
+        if (j > 0) {
+            for (var i = 1; i <= j; i++) {
+                n = n + a[i];
+                if (i == 22) {
+                    document.fa.txt.value = "";
+                    n = "";
+                }
+            }
         }
-
-
+        document.fa.txt.value = n;
+        n = "";
+        setTimeout("typeTextarea()", 1);
+        //return false;
     }
 
 </script>
